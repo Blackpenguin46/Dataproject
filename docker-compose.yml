@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_MODELS=mistral
+    restart: unless-stopped
+
+  streamlit:
+    build: .
+    container_name: streamlit-app
+    ports:
+      - "8501:8501"
+    depends_on:
+      - ollama
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    # If you want to persist process_data.json, mount a volume here
+    # volumes:
+    #   - ./process_data.json:/app/process_data.json
+
+volumes:
+  ollama_data: 
